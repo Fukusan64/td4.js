@@ -1,0 +1,56 @@
+import clocker from './lib/clocker.mjs';
+import Pc from './lib/ProgramCounter.mjs';
+import Input from './lib/Input.mjs';
+import Output from './lib/Output.mjs';
+import Register from './lib/Register.mjs';
+import Selector from './lib/Selector.mjs';
+import FF from './lib/FF.mjs';
+import decode from './lib/dnstructionDecode.mjs';
+import fullAdder from './lib/fullAdder.mjs';
+import Rom from './lib/ROM.mjs';
+
+const pc = new Pc();
+const input = new Input();
+const output = new Output();
+const aregister = new Register();
+const bregister = new Register();
+const selector = new Selector(aregister, bregister, input, { data: [false, false, false, false] });
+const cflag = new FF();
+const rom = new Rom();
+
+cflag.loadFlag = true;
+
+rom.init();
+
+clocker(() => {
+  // load opCode
+  const opCode = rom.read(...pc.data);
+
+  // set load flags
+  [
+    aregister.loadFlag,
+    bregister.loadFlag,
+    output.loadFlag,
+    pc.loadFlag,
+    selector.flagA,
+    selector.flagB,
+  ] = decode(opCode.slice(0, 4), cflag.data);
+
+  // calculate
+  const results = fullAdder(selector.output, opCode.slice(4));
+  [aregister, bregister, output, pc].forEach((rg) => { rg.data = results.slice(0, 4) });
+  cflag.data = results[4];
+
+  // update programCounter
+  pc.update();
+
+  // store calc data
+  [
+    aregister,
+    bregister,
+    output,
+    pc,
+    cflag,
+  ].forEach(rg => rg.clock());
+
+}, 1000);
