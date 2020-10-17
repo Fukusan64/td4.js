@@ -5,7 +5,7 @@ import Output from './lib/Output.mjs';
 import Register from './lib/Register.mjs';
 import Selector from './lib/Selector.mjs';
 import FF from './lib/FF.mjs';
-import decode from './lib/dnstructionDecode.mjs';
+import decode from './lib/decode.mjs';
 import fullAdder from './lib/fullAdder.mjs';
 import Rom from './lib/ROM.mjs';
 
@@ -37,9 +37,10 @@ clocker(() => {
   ] = decode(opCode.slice(0, 4), cflag.data);
 
   // calculate
-  const results = fullAdder(selector.output, opCode.slice(4));
-  [aregister, bregister, output, pc].forEach((rg) => { rg.data = results.slice(0, 4) });
-  cflag.data = results[4];
+  const { results, carry } = fullAdder(selector.output, opCode.slice(4));
+  // eslint-disable-next-line no-param-reassign
+  [aregister, bregister, output, pc].forEach((rg) => { rg.data = results; });
+  cflag.data = carry;
 
   // update programCounter
   pc.update();
@@ -51,6 +52,5 @@ clocker(() => {
     output,
     pc,
     cflag,
-  ].forEach(rg => rg.clock());
-
+  ].forEach((rg) => rg.clock());
 }, 1000);
