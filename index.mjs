@@ -20,7 +20,8 @@ const rom = new ROM();
 
 cflag.loadFlag = true;
 
-rom.init();
+// ここはガン無視をキメ込むしかないeslint先輩がtop-level-awaitに対応していない(parsing error)
+await rom.init();
 
 clocker(() => {
   // load opCode
@@ -38,6 +39,7 @@ clocker(() => {
 
   // calculate
   const { results, carry } = fullAdder(selector.output, opCode.slice(4));
+
   // eslint-disable-next-line no-param-reassign
   [aregister, bregister, output, pc].forEach((rg) => { rg.data = results; });
   cflag.data = carry;
