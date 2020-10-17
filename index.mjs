@@ -7,7 +7,7 @@ import Selector from './lib/Selector.mjs';
 import FF from './lib/FF.mjs';
 import decode from './lib/decode.mjs';
 import fullAdder from './lib/fullAdder.mjs';
-import Rom from './lib/ROM.mjs';
+import ROM from './lib/ROM.mjs';
 
 const pc = new Pc();
 const input = new Input();
@@ -16,7 +16,7 @@ const aregister = new Register();
 const bregister = new Register();
 const selector = new Selector(aregister, bregister, input, { data: [false, false, false, false] });
 const cflag = new FF();
-const rom = new Rom();
+const rom = new ROM();
 
 cflag.loadFlag = true;
 

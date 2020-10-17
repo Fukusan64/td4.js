@@ -13,5 +13,7 @@ module.exports = {
   rules: {
     'import/extensions': ['error', 'always'],
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
+    'no-underscore-dangle': ['error', { allowAfterThis: true }],
+    'no-constant-condition': ['error', { checkLoops: false }],
   },
 };
