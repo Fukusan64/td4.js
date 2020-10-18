@@ -54,5 +54,5 @@ clocker(() => {
     output,
     pc,
     cflag,
-  ].forEach((rg) => rg.write());
+  ].forEach((rg) => { rg.write(); });
 }, 1000);
