@@ -38,7 +38,7 @@ clocker(() => {
   ] = decode(opCode.slice(0, 4), cflag.data);
 
   // calculate
-  const { results, carry } = fullAdder(selector.output, opCode.slice(4));
+  const { results, carry } = fullAdder(selector.output.data, opCode.slice(4));
 
   // eslint-disable-next-line no-param-reassign
   [aregister, bregister, output, pc].forEach((rg) => { rg.data = results; });
