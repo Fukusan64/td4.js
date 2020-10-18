@@ -1,4 +1,8 @@
-import clocker from './lib/clocker.mjs';
+import keypress from 'keypress';
+import dotenv from 'dotenv';
+
+import AutoClocker from './lib/AutoClocker.mjs';
+import ManualClocker from './lib/ManualClocker.mjs';
 import Pc from './lib/ProgramCounter.mjs';
 import Input from './lib/Input.mjs';
 import Output from './lib/Output.mjs';
@@ -8,6 +12,7 @@ import FF from './lib/FF.mjs';
 import decode from './lib/decode.mjs';
 import fullAdder from './lib/fullAdder.mjs';
 import ROM from './lib/ROM.mjs';
+dotenv.config();
 
 const pc = new Pc();
 const input = new Input();
@@ -17,13 +22,32 @@ const bregister = new Register();
 const selector = new Selector(aregister, bregister, input, { data: [false, false, false, false] });
 const cflag = new FF();
 const rom = new ROM();
+const clocker = process.env.CLOCKER === 'manual' ?
+  new ManualClocker() :
+  new AutoClocker()
+;
 
+clocker.interval = parseInt(process.env.CLOCKER_INTERVAL ?? 1000);
+
+// set clock event
+keypress(process.stdin);
+
+// listen for the "keypress" event
+process.stdin.on('keypress', (_, key) => {
+  if (key?.name === 'space') clocker.clock();
+  if (key?.ctrl && (key?.name === 'c' || key?.name === 'd')) {
+    process.stdin.pause();
+    process.exit(0);
+  }
+});
+process.stdin.setRawMode(true);
+process.stdin.resume();
+
+////////////////////////////////////////////////////////////////////////////////
 cflag.loadFlag = true;
-
-// ここはガン無視をキメ込むしかないeslint先輩がtop-level-awaitに対応していない(parsing error)
 await rom.init();
 
-clocker(() => {
+clocker.setTask(() => {
   // load opCode
   const opCode = rom.read(...pc.data);
 
@@ -55,4 +79,6 @@ clocker(() => {
     pc,
     cflag,
   ].forEach((rg) => { rg.write(); });
-}, 1000);
+});
+
+clocker.start();
