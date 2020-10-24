@@ -55,16 +55,16 @@ clocker.setTask(() => {
   const instruction = rom.read(...pc.data);
   // set load flags
   [
+    selector.flagB,
+    selector.flagA,
     aregister.loadFlag,
     bregister.loadFlag,
     output.loadFlag,
     pc.loadFlag,
-    selector.flagA,
-    selector.flagB,
   ] = decode(instruction.slice(0, 4), cflag.data);
   // いろいろ表示
   print(
-    'addres     : ',
+    'address    : ',
     pc.data.map((e) => (e ? '1' : '0')).join(','),
     parseInt(
       pc.data
@@ -89,6 +89,7 @@ clocker.setTask(() => {
       2,
     ),
   );
+  
   // calculate
   const { results, carry } = fullAdder(selector.output.data, instruction.slice(4));
 
