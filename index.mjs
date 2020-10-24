@@ -65,7 +65,7 @@ clocker.setTask(() => {
     selector.flagA,
     selector.flagB,
   ] = decode(opCode.slice(0, 4), cflag.data);
-  // output input status
+  // いろいろ表示
   print(
     'addres: ',
     pc.data.map(e => e ? '1' : '0').join(','),
@@ -110,6 +110,8 @@ clocker.setTask(() => {
     pc,
     cflag,
   ].forEach((rg) => rg.write());
+
+  // 出力も表示
   print(
     'output: ',
     output.data.map(e => e ? '1' : '0').join(','),
