@@ -100,17 +100,6 @@ clocker.setTask(() => {
       2,
     ),
   );
-  print(
-    'output: ',
-    output.data.map(e => e ? '1' : '0').join(','),
-    parseInt(
-      output.data
-        .reverse()
-        .map((e) => e ? '1' : '0' )
-        .join(''),
-      2,
-    ),
-  );
   // calculate
   const { results, carry } = fullAdder(selector.output.data, opCode.slice(4));
 
@@ -129,6 +118,17 @@ clocker.setTask(() => {
     pc,
     cflag,
   ].forEach((rg) => rg.write());
+  print(
+    'output: ',
+    output.data.map(e => e ? '1' : '0').join(','),
+    parseInt(
+      output.data
+        .reverse()
+        .map((e) => e ? '1' : '0' )
+        .join(''),
+      2,
+    ),
+  );
 });
 
 clocker.start();
