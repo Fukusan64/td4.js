@@ -51,8 +51,8 @@ await rom.init();
 
 clocker.setTask(() => {
   clearConsole();
-  // load opCode
-  const opCode = rom.read(...pc.data);
+  // load instruction
+  const instruction = rom.read(...pc.data);
   // set load flags
   [
     aregister.loadFlag,
@@ -61,10 +61,10 @@ clocker.setTask(() => {
     pc.loadFlag,
     selector.flagA,
     selector.flagB,
-  ] = decode(opCode.slice(0, 4), cflag.data);
+  ] = decode(instruction.slice(0, 4), cflag.data);
   // いろいろ表示
   print(
-    'addres: ',
+    'addres     : ',
     pc.data.map((e) => (e ? '1' : '0')).join(','),
     parseInt(
       pc.data
@@ -75,11 +75,11 @@ clocker.setTask(() => {
     ),
   );
   print(
-    'opcode: ',
-    opCode.map((e) => (e ? '1' : '0')).join(','),
+    'instruction: ',
+    instruction.map((e) => (e ? '1' : '0')).join(','),
   );
   print(
-    'input : ',
+    'input      : ',
     input.data.map((e) => (e ? '1' : '0')).join(','),
     parseInt(
       input.data
@@ -90,7 +90,7 @@ clocker.setTask(() => {
     ),
   );
   // calculate
-  const { results, carry } = fullAdder(selector.output.data, opCode.slice(4));
+  const { results, carry } = fullAdder(selector.output.data, instruction.slice(4));
 
   // eslint-disable-next-line no-param-reassign
   [aregister, bregister, output, pc].forEach((rg) => rg.data = results);
@@ -110,7 +110,7 @@ clocker.setTask(() => {
 
   // 出力も表示
   print(
-    'output: ',
+    'output     : ',
     output.data.map((e) => (e ? '1' : '0')).join(','),
     parseInt(
       output.data
