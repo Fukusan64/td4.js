@@ -35,18 +35,10 @@ keypress(process.stdin);
 // listen for the "keypress" event
 process.stdin.on('keypress', (ch, key) => {
   if (key?.name === 'space') clocker.clock();
-  if (ch === '1') {
-    input.toggle(0);
-  }
-  if (ch === '2') {
-    input.toggle(1);
-  }
-  if (ch === '3') {
-    input.toggle(2);
-  }
-  if (ch === '4') {
-    input.toggle(3);
-  }
+  if (ch === '1') input.toggle(0);
+  if (ch === '2') input.toggle(1);
+  if (ch === '3') input.toggle(2);
+  if (ch === '4') input.toggle(3);
 
   if (key?.ctrl && (key?.name === 'c' || key?.name === 'd')) {
     process.stdin.pause();
