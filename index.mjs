@@ -12,6 +12,7 @@ import decode from './lib/decode.mjs';
 import fullAdder from './lib/fullAdder.mjs';
 import ROM from './lib/ROM.mjs';
 import { print, clearConsole } from './lib/console.mjs';
+
 dotenv.config();
 
 const pc = new Pc();
@@ -22,12 +23,9 @@ const bregister = new Register();
 const selector = new Selector(aregister, bregister, input, { data: [false, false, false, false] });
 const cflag = new FF();
 const rom = new ROM();
-const clocker = process.env.CLOCKER === 'manual' ?
-  new ManualClocker() :
-  new AutoClocker()
-;
+const clocker = process.env.CLOCKER === 'manual' ? new ManualClocker() : new AutoClocker();
 
-clocker.interval = parseInt(process.env.CLOCKER_INTERVAL ?? 1000);
+clocker.interval = parseInt(process.env.CLOCKER_INTERVAL ?? 1000, 10);
 
 // set clock event
 keypress(process.stdin);
@@ -48,7 +46,6 @@ process.stdin.on('keypress', (ch, key) => {
 process.stdin.setRawMode(true);
 process.stdin.resume();
 
-////////////////////////////////////////////////////////////////////////////////
 cflag.loadFlag = true;
 await rom.init();
 
@@ -68,26 +65,26 @@ clocker.setTask(() => {
   // いろいろ表示
   print(
     'addres: ',
-    pc.data.map(e => e ? '1' : '0').join(','),
+    pc.data.map((e) => (e ? '1' : '0')).join(','),
     parseInt(
       pc.data
         .reverse()
-        .map((e) => e ? '1' : '0' )
+        .map((e) => (e ? '1' : '0'))
         .join(''),
       2,
     ),
   );
   print(
     'opcode: ',
-    opCode.map(e => e ? '1' : '0').join(','),
-  )
+    opCode.map((e) => (e ? '1' : '0')).join(','),
+  );
   print(
     'input : ',
-    input.data.map(e => e ? '1' : '0').join(','),
+    input.data.map((e) => (e ? '1' : '0')).join(','),
     parseInt(
       input.data
         .reverse()
-        .map((e) => e ? '1' : '0' )
+        .map((e) => (e ? '1' : '0'))
         .join(''),
       2,
     ),
@@ -114,11 +111,11 @@ clocker.setTask(() => {
   // 出力も表示
   print(
     'output: ',
-    output.data.map(e => e ? '1' : '0').join(','),
+    output.data.map((e) => (e ? '1' : '0')).join(','),
     parseInt(
       output.data
         .reverse()
-        .map((e) => e ? '1' : '0' )
+        .map((e) => (e ? '1' : '0'))
         .join(''),
       2,
     ),
