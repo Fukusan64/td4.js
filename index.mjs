@@ -5,18 +5,18 @@ import AutoClocker from './lib/AutoClocker.mjs';
 import ManualClocker from './lib/ManualClocker.mjs';
 import Pc from './lib/ProgramCounter.mjs';
 import Input from './lib/Input.mjs';
-import Output from './lib/Output.mjs';
 import Register from './lib/Register.mjs';
 import Selector from './lib/Selector.mjs';
 import FF from './lib/FF.mjs';
 import decode from './lib/decode.mjs';
 import fullAdder from './lib/fullAdder.mjs';
 import ROM from './lib/ROM.mjs';
+import { print, clearConsole } from './lib/console.mjs';
 dotenv.config();
 
 const pc = new Pc();
 const input = new Input();
-const output = new Output();
+const output = new Register();
 const aregister = new Register();
 const bregister = new Register();
 const selector = new Selector(aregister, bregister, input, { data: [false, false, false, false] });
@@ -33,8 +33,21 @@ clocker.interval = parseInt(process.env.CLOCKER_INTERVAL ?? 1000);
 keypress(process.stdin);
 
 // listen for the "keypress" event
-process.stdin.on('keypress', (_, key) => {
+process.stdin.on('keypress', (ch, key) => {
   if (key?.name === 'space') clocker.clock();
+  if (ch === '1') {
+    input.toggle(0);
+  }
+  if (ch === '2') {
+    input.toggle(1);
+  }
+  if (ch === '3') {
+    input.toggle(2);
+  }
+  if (ch === '4') {
+    input.toggle(3);
+  }
+
   if (key?.ctrl && (key?.name === 'c' || key?.name === 'd')) {
     process.stdin.pause();
     process.exit(0);
@@ -48,9 +61,9 @@ cflag.loadFlag = true;
 await rom.init();
 
 clocker.setTask(() => {
+  clearConsole();
   // load opCode
   const opCode = rom.read(...pc.data);
-
   // set load flags
   [
     aregister.loadFlag,
@@ -60,12 +73,49 @@ clocker.setTask(() => {
     selector.flagA,
     selector.flagB,
   ] = decode(opCode.slice(0, 4), cflag.data);
-
+  // output input status
+  print(
+    'addres: ',
+    pc.data.map(e => e ? '1' : '0').join(','),
+    parseInt(
+      pc.data
+        .reverse()
+        .map((e) => e ? '1' : '0' )
+        .join(''),
+      2,
+    ),
+  );
+  print(
+    'opcode: ',
+    opCode.map(e => e ? '1' : '0').join(','),
+  )
+  print(
+    'input : ',
+    input.data.map(e => e ? '1' : '0').join(','),
+    parseInt(
+      input.data
+        .reverse()
+        .map((e) => e ? '1' : '0' )
+        .join(''),
+      2,
+    ),
+  );
+  print(
+    'output: ',
+    output.data.map(e => e ? '1' : '0').join(','),
+    parseInt(
+      output.data
+        .reverse()
+        .map((e) => e ? '1' : '0' )
+        .join(''),
+      2,
+    ),
+  );
   // calculate
   const { results, carry } = fullAdder(selector.output.data, opCode.slice(4));
 
   // eslint-disable-next-line no-param-reassign
-  [aregister, bregister, output, pc].forEach((rg) => { rg.data = results; });
+  [aregister, bregister, output, pc].forEach((rg) => rg.data = results);
   cflag.data = carry;
 
   // update programCounter
