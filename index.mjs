@@ -89,7 +89,15 @@ clocker.setTask(() => {
       2,
     ),
   );
-  
+  print(
+    'A          : ',
+    aregister.data.map((e) => (e ? '1' : '0')).join(','),
+  );
+  print(
+    'B          : ',
+    bregister.data.map((e) => (e ? '1' : '0')).join(','),
+  );
+
   // calculate
   const { results, carry } = fullAdder(selector.output.data, instruction.slice(4));
 
